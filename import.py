@@ -6,7 +6,7 @@ from flask import Flask
 
 app = Flask(__name__)
 
-engine = create_engine(os.getenv("DATABASE_URL"))
+engine = create_engine(os.getenv(uri))
 db = scoped_session(sessionmaker(bind=engine))
 
 
