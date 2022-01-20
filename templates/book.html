@@ -1,0 +1,94 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<div class="card text-center">
+  <div class="card-header">
+    Book Info 
+  </div>
+  <div class="card-body">
+          <div>
+            <img src="http://covers.openlibrary.org/b/isbn/{{book.isbn}}-M.jpg" width="200px">    
+        </div>
+    <h5 class="card-title">{{book.title}}</h5>
+    <h6>Author : {{ book.author }}</h6>
+    <h6>Year : {{ book.year }} </h6>
+    <h6>ISBN : {{ book.isbn }}</h6>
+
+  </div>
+
+</div>
+
+{#Dividing two cards / Book info / Goodread infos#}
+<div class="card text-center">
+  <div class="card-header">
+     GoodReads Reviews
+ </div>
+  <div class="card-body">
+    <h6>Average Rating : {{ avgrating }}</h6>
+    <h6>Rated by {{ rating_work }} people.</h6>
+    <a href="https://www.goodreads.com/search?q={{book.isbn}}" class="btn btn-primary">More..</a>
+
+
+
+
+  </div>
+
+</div>
+
+{#Dividing two cards / Book info / Goodread infos#}
+
+
+<div class="card text-center">
+  <div class="card-header">
+  <div class="card-footer">
+   Leave your rating and share your thoughts :)
+  </div>
+
+    <div class="comment-wrapper">
+
+      <form method="POST" class="">
+            <select id="rating" name="rating" class="form-control" required>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option selected value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            </select>
+            </div>
+
+          <textarea class="form-control" placeholder="write a comment..." rows="2"name="comment" id="comment"></textarea>
+          <br>
+          <div class="form-group col-sm">
+          <button class="btn btn-success" type="submit">Submit</button>
+          </div>
+          <div class="clearfix"></div>
+      </form>
+
+{% if reviews %}
+    {% for review in reviews %}
+        <div class="media-body">
+            <span class="text-muted pull-right">
+              <strong class="text-success">@{{review.username}}</strong>
+                <small class="text-muted">rated it {{review.rating}} out of 5 stars.</small>
+            </span>
+            <p class="comment">
+            {{review.comment}}
+            </p>
+        </div>
+      <div class="clearfix"></div>
+    {% endfor %}
+{% endif %}
+                    
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+{% from "includes/_formhelpers.html" import render_field%}
+   
+{% endblock %}
