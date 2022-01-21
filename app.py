@@ -10,13 +10,13 @@ from passlib.hash import sha256_crypt
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"Rq45z\n\xec]/'
 
-# Check for environment variable
-if not os.getenv("DATABASE_URL"):
-    raise RuntimeError("DATABASE_URL is not set")
-
-uri = os.getenv("DATABASE_URL")  # or other relevant config var
+uri = os.getenv("DATABASE_URL") 
 if uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql://", 1)
+
+# Check for environment variable
+if not uri :
+    raise RuntimeError("DATABASE_URL is not set")
 
 # Configure session to use filesystem
 app.config["SESSION_PERMANENT"] = False
@@ -131,17 +131,19 @@ def search():
 @app.route("/book/<string:book_isbn>", methods=['GET','POST'])
 def book(book_isbn):
 
+    db.execute("CREATE TABLE reviews (reviews_id serial PRIMARY KEY, book_id VARCHAR(10) UNIQUE NOT NULL, users_id VARCHAR(10) UNIQUE NOT NULL, comment VARCHAR (255) UNIQUE NOT NULL, username VARCHAR (50) NOT NULL, rating VARCHAR (50) NOT NULL)")
+
     #Current USer
     currentUser = session["username"]
 
     # Book_id by ISBN
-    row = db.execute("SELECT id FROM books WHERE isbn= :isbn",{"isbn": book_isbn})       
+    row = db.execute("SELECT user_id FROM books WHERE isbn= :isbn",{"isbn": book_isbn})       
     #Save as a variable
     bookId = row.fetchone()
     bookId = bookId[0]
 
     #Fetching user ID.
-    row2 = db.execute("SELECT id FROM users where username= :username", {"username":currentUser})
+    row2 = db.execute("SELECT user_id FROM users where username= :username", {"username":currentUser})
     userId = row2.fetchone()
     userId = userId[0]
 
@@ -174,7 +176,7 @@ def book(book_isbn):
     else:
 
         book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": book_isbn}).fetchone()
-        reviews = db.execute("SELECT * FROM reviews JOIN users ON reviews.users_id = users.id WHERE book_id = :book_id", {"book_id":bookId})
+        reviews = db.execute("SELECT * FROM reviews JOIN users ON reviews.users_id = user_id WHERE book_id = :book_id", {"book_id":bookId})
 
     # Set up API - Goodreads : KEY = "dCb5gYyxdpbZIEBAJh9fg"
         res = requests.get("https://www.goodreads.com/book/review_counts.json",
